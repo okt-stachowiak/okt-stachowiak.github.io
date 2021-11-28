@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>demo</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <!-- Import Mapbox GL JS  -->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+  <!-- Import Assembly -->
+  <link href='https://api.mapbox.com/mapbox-assembly/v0.23.2/assembly.min.css' rel='stylesheet'>
+  <script src='https://api.mapbox.com/mapbox-assembly/v0.23.2/assembly.js'> </script>
+  <!-- Import jQuery -->
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+	  background: #a30003;
+    }
+    .sidebar {
+    width: 20%;
+	background: #a30003;
+	border-left: 5px solid #a30003;
+    }
+	
+	h1{text-align: center;
+		font-size:22px;
+        margin:0;
+        font-weight:400;
+        line-height: 20px;
+        padding: 10px 2px;
+		color: #f0dc00
+		
+      }
+	
+	p{text-align: center;
+		font-size:16px;
+        margin:0;
+        font-weight:400;
+        line-height: 20px;
+        padding: 10px 2px;
+		color: #f0dc00
+      }
+
+	IMG.logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+	}
+	
+	IMG.legenda {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index:9
+	}
+	
+	
+	h4{text-align: center;
+		font-size:22px;
+        margin:0;
+        font-weight:400;
+        line-height: 20px;
+        padding: 10px 2px;
+		color: #f0dc00
+      }
+	  
+	.mb
+	{display: block;
+    margin-left: auto;
+    margin-right: auto
+	}
+		
+	.range
+	{display: block;
+    margin-left: auto;
+    margin-right: auto
+	}
+	  
+    #map {
+	border-left: 5px solid #a30003;
+	position: absolute;
+	left: 20%;
+	width: 80%;
+	top: 0;
+	bottom: 0;
+	z-index:8
+	}
+	
+	.mapboxgl-popup-content {
+	font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
+	padding: 0;
+	width: 300px;
+	}
+	
+	.mapboxgl-popup-close-button {
+	display: none;
+	}
+	
+	.mapboxgl-popup-content-wrapper {
+	padding: 1%;
+	}
+	
+	.mapboxgl-popup-content h3 {
+	background: #a30003;
+	color: #f0dc00;
+	margin: 5;
+	display: block;
+	padding: 10px;
+	border-radius: 3px 3px 0 0;
+	font-weight: 700;
+	margin-top: -15px;
+	text-align: center;
+	}
+	
+	.mapboxgl-popup-content p {
+	margin: 0;
+	display: block;
+	padding: 5px;
+	font-weight: 400;
+	background: #a30003;
+	color: #f0dc00;
+	text-align: center;
+	}
+	
+	.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+	.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+	.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+    border-bottom-color: #a30003;
+    }
+	.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+	.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+	.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+    border-top-color: #a30003;
+    }
+	.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+    border-right-color: #a30003;
+    }
+	.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+    border-left-color: #a30003;
+    }
+	
+#menu {
+background: #f8f8f8;
+z-index: 1;
+top: 10px;
+right: 10px;
+border-radius: 3px;
+width: 370px;
+border: 5px solid rgba(252, 186, 3, 1);
+font-family: 'Open Sans', sans-serif;
+}
+ 
+#menu a {
+font-size: 13px;
+color:  #a30003;
+display: block;
+margin: 0;
+padding: 0;
+padding: 10px;
+text-decoration: none;
+border-bottom: 0px solid rgba(0, 0, 0, 0.25);
+text-align: center;
+}
+ 
+#menu a:last-child {
+border: none;
+}
+ 
+#menu a:hover {
+background-color: #f8f8f8;
+color:  #f0dc00;
+}
+ 
+#menu a.active {
+background-color: #a30003;
+color: #f0dc00;
+}
+ 
+#menu a.active:hover {
+background:  #f0dc00;
+}
+	
+  </style>
+
+</head>
+<body>
+	<div>
+	<img class="legenda" src="https://i.ibb.co/hfw10f1/legenda.png" width="10%" height="10%">
+	<div id='map'>
+	</div>
+	</div>
+
+<div class='sidebar'>
+  <h1><b>PAPRYKARZ</b></h1>
+	<p>Wyszukiwarka atrakcji turystycznych w Szczecinie</p>
+	<img class="logo" src="https://i.ibb.co/WGymm5F/herb2.png" width="60%" height="60%">
+
+	<div>
+	<form id='params'>
+      <h4 class='txt-m txt-bold mb6 align-center'>W jaki sposób podróżujesz?</h4>
+      <div class='mb mr0 margin-auto toggle-group margin-auto'>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='walking'>
+          <div class='toggle toggle--active-white toggle--yellow'>Pieszo</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='cycling' checked>
+          <div class='toggle toggle--active-white toggle--yellow'>Rowerem</div>
+        </label>
+        <label class='toggle-container'>
+          <input name='profile' type='radio' value='driving'>
+          <div class='toggle toggle--active-white toggle--yellow'>Autem</div>
+        </label>
+      </div>
+	  
+      <h4 class='txt-m txt-bold mb6 align-center'>Ile masz czasu? </h4>
+		<div class='range range--yellow w240'>
+			<input name='duration' type='range' min='5' max='30' value='5'/>
+		</div>
+		<label><h4 id='sliderValue'>5 min</h4></label>	
+    </form>
+	<h4 class='txt-m txt-bold mb6 align-center'>Jakie atrakcje cię interesują? </h4>
+	<nav id="menu"></nav>	
+	</div>
+	
+
+
+</div>
+
+ 
+  <script>
+    // Add your Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic3RhY2hvd2lhayIsImEiOiJja2dzNzVjc3YwY2h3MzRyczk5amdtdTVmIn0.wT_zJYXqAEAeqyQhb2piqw';
+    var map = new mapboxgl.Map({
+      container: 'map', // Specify the container ID
+      style: 'mapbox://styles/stachowiak/ckjld8ejl0prt1aqhvp3ijv9r', // Specify which map style to use
+      center: [14.54, 53.43], // Specify the starting position
+      zoom: 11.5, // Specify the starting zoom
+    });
+
+    // Create variables to use in getIso()
+    var urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
+    var lon;
+    var lat;
+    var profile = 'walking';
+    var minutes = 5;
+
+    // Create a function that sets up the Isochrone API query then makes an Ajax call
+    function getIso() {
+      var query = urlBase + profile + '/' + lon + ',' + lat + '?contours_minutes=' + minutes + '&polygons=true&access_token=' + mapboxgl.accessToken;
+
+      $.ajax({
+        method: 'GET',
+        url: query
+      }).done(function(data) {
+        // Set the 'iso' source's data to what's returned by the API query
+        map.getSource('iso').setData(data);
+      })
+    };
+
+    var marker;
+
+    //map.on('load', function() {
+      // When the map loads, add the source and layer
+	  map.on('click',function(e) {
+	  if (map.getLayer("isoLayer")) {
+	      map.removeLayer("isoLayer");
+	  map.removeSource("iso");
+	  }
+	  if(marker!=null)marker.remove();
+	  marker = new mapboxgl.Marker({
+	  'color':'#314ccd'
+	  });
+	 // marker.setLngLat(e.lngLat).addTo(map);
+	  lon=e.lngLat.lng;
+	  lat=e.lngLat.lat;
+	  
+      map.addSource('iso', {
+        type: 'geojson',
+        data: {
+          "type": 'FeatureCollection',
+          "features": []
+        }
+      });
+
+      map.addLayer({
+        'id': 'isoLayer',
+        'type': 'fill',
+        // Use "iso" as the data source for this layer
+        'source': 'iso',
+        'layout': {},
+        'paint': {
+          // The fill color for the layer is set to a light purple
+          'fill-color': '#f50f0f',
+          'fill-opacity': 0.4
+        }
+      }, "poi-label");
+
+      // Initialize the marker at the query coordinates
+     // marker.setLngLat(lngLat).addTo(map);
+
+      // Make the API call
+      getIso();
+    });
+
+    // Target the "params" form in the HTML portion of your code
+    var params = document.getElementById('params');
+
+    // When a user changes the value of profile or duration by clicking a button, change the parameter's value and make the API query again
+    params.addEventListener('change', function(e) {
+      if (e.target.name === 'profile') {
+        profile = e.target.value;
+        getIso();
+      } else if (e.target.name === 'duration') {
+        minutes = e.target.value;
+        getIso();
+	  sliderValue.textContent = e.target.value + ' min';
+      }
+    });
+	map.on('click', function(e) {
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['Zabytki','Monumenty','Rozrywka','Kultura i sztuka','Sport','Przyroda'] // replace this with the name of the layer
+  });
+
+  if (!features.length) {
+    return;
+  }
+
+  var feature = features[0];
+
+  var popup = new mapboxgl.Popup({ offset: [0, -15] })
+    .setLngLat(feature.geometry.coordinates)
+    .setHTML('<h3>' + feature.properties.Nazwa + '</h3><p>' + feature.properties.Adres + '</p><p>' + feature.properties.Opis +'</p>')
+    .addTo(map);
+});
+	var nav = new mapboxgl.NavigationControl();
+	map.addControl(nav, 'top-right');
+
+
+
+
+
+
+var toggleableLayerIds = ['Zabytki','Monumenty','Rozrywka','Kultura i sztuka','Sport','Przyroda'];
+ 
+// set up the corresponding toggle button for each layer
+for (var i = 0; i < toggleableLayerIds.length; i++) {
+var id = toggleableLayerIds[i];
+ 
+var link = document.createElement('a');
+link.href = '#';
+link.className = 'active';
+link.textContent = id;
+ 
+link.onclick = function (e) {
+var clickedLayer = this.textContent;
+e.preventDefault();
+e.stopPropagation();
+ 
+var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+ 
+// toggle layer visibility by changing the layout object's visibility property
+if (visibility === 'visible') {
+map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+this.className = '';
+} else {
+this.className = 'active';
+map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+}
+};
+ 
+var layers = document.getElementById('menu');
+layers.appendChild(link);
+}
+
+</script>
+
+</body>
+
+</html>
